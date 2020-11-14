@@ -52,6 +52,7 @@ def cli(ref: List[Path], dup: Path, force: bool):
 
                 if confirmation:
                     dup_path.unlink()
+                    break
 
 
 if __name__ == "__main__":
