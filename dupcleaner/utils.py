@@ -3,7 +3,7 @@ from functools import lru_cache
 import hashlib
 
 
-@lru_cache
+@lru_cache(maxsize=1024)
 def sha1_digest(posix_path: str):
     BLOCKSIZE = 1024 * 1024
 
