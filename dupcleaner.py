@@ -33,13 +33,11 @@ def cli(ref: List[Path], dup: Path, force: bool):
             potential_refs = ref_hierarchy.contains(dup_path)
 
             if len(potential_refs) > 0:
-                click.secho(
-                    f"\ndup: {dup_path}"
-                )
+                click.secho(f"\ndup: {dup_path}")
 
             idx = 1
             for potential_ref in potential_refs:
-                click.secho(f"  ref_{idx}: {potential_ref}")
+                click.secho(f"  ref_{idx}: {potential_ref.path.as_posix()}")
                 idx += 1
 
             if len(potential_refs) > 0:
