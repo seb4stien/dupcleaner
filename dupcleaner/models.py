@@ -6,7 +6,7 @@ from typing import Dict, List
 from pydantic import BaseModel
 
 # local
-from dupcleaner.utils import sha1_digest
+from dupcleaner.utils import image_sha1_digest, sha1_digest
 
 
 class File(BaseModel):
@@ -18,18 +18,27 @@ class File(BaseModel):
 class FileHierarchy(BaseModel):
     files: Dict[str, List[File]] = {}
 
-    def contains(self, path: Path):
+    def contains(self, path: Path, mode="raw"):
         founds = []
         size = path.stat().st_size
         if path.name in self.files:
             for file in self.files[path.name]:
                 if path.as_posix() == file.path.as_posix():
                     raise RuntimeError(f"{path.as_posix()} is both in ref and dup.")
-                if file.size == size:
+
+                if mode == "raw":
+                    if file.size == size:
+                        if file.sha1 == "":
+                            file.sha1 = sha1_digest(file.path.as_posix())
+                        if file.sha1 == sha1_digest(path.as_posix()):
+                            founds.append(file)
+                elif mode == "image":
                     if file.sha1 == "":
-                        file.sha1 = sha1_digest(file.path.as_posix())
-                    if file.sha1 == sha1_digest(path.as_posix()):
+                        file.sha1 = image_sha1_digest(file.path.as_posix())
+                    if file.sha1 == image_sha1_digest(path.as_posix()):
                         founds.append(file)
+                else:
+                    raise RuntimeError(f"Unsupported mode: {mode}")
         return founds
 
 

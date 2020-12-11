@@ -17,8 +17,8 @@ from dupcleaner.models import FileHierarchyLoader
 @click.option("--dup", type=Path, required=True, help="Potential duplicates path")
 @click.option("-f", "--force", is_flag=True, help="WARNING: auto-delete files")
 @click.option("-v", "--verbose", is_flag=True, help="Verbose mode")
-def cli(ref: List[Path], dup: Path, force: bool, verbose: bool):
-
+@click.option("-m", "--mode", type=click.Choice(["raw", "image"]), default="raw", help="Comparaison mode")
+def cli(ref: List[Path], dup: Path, force: bool, verbose: bool, mode: str):
     hierarchies = []
 
     for _ref in ref:
@@ -35,7 +35,7 @@ def cli(ref: List[Path], dup: Path, force: bool, verbose: bool):
             click.secho(f"Looking for {dup_path}")
 
         for ref_hierarchy in hierarchies:
-            potential_refs = ref_hierarchy.contains(dup_path)
+            potential_refs = ref_hierarchy.contains(dup_path, mode=mode)
 
             if len(potential_refs) > 0:
                 click.secho(f"\ndup: {dup_path}")
